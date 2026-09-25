@@ -2,7 +2,7 @@
 
 Project Code: WST21-PM-2026-SF
 
-Student Name: _Add your name_
+Student Name: Narvasa Kyle Andrei
 
 Course & Year: _Add your course and year_
 
