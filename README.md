@@ -4,7 +4,7 @@ Project Code: WST21-PM-2026-SF
 
 Student Name: Narvasa Kyle Andrei
 
-Course & Year: _Add your course and year_
+Course & Year: BSIT 2 SECTION 3
 
 Database Used: SQLite (Laravel's built-in local database option)
 

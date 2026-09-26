@@ -3,81 +3,81 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class TaskController extends Controller
 {
-    public function index(): View
+    // View Tasks (Dashboard Homepage)
+    public function index()
     {
-        $tasks = Task::query()
-            ->orderByRaw("CASE WHEN status = 'Pending' THEN 0 ELSE 1 END")
-            ->orderBy('due_date')
-            ->latest()
-            ->get();
-
-        return view('tasks.index', [
-            'tasks' => $tasks,
-            'totalTasks' => Task::count(),
-            'pendingTasks' => Task::where('status', 'Pending')->count(),
-            'completedTasks' => Task::where('status', 'Completed')->count(),
-        ]);
+        $tasks = Task::latest()->get();
+        return view('tasks.index', compact('tasks'));
     }
 
-    public function create(): View
+    // Open Add Task Page
+    public function create()
     {
         return view('tasks.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    // Add Task Handler
+    public function store(Request $request)
     {
         $validated = $request->validate([
-            'task_name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status' => ['required', 'in:Pending,Completed'],
-            'due_date' => ['nullable', 'date'],
+            'task_name' => 'required|max:255',
+            'description' => 'nullable',
+            'due_date' => 'nullable|date',
         ]);
 
-        Task::create($validated);
+        Task::create([
+            'task_name' => $validated['task_name'],
+            'description' => $validated['description'],
+            'due_date' => $validated['due_date'],
+            'status' => 'Pending',
+        ]);
 
-        return to_route('tasks.index')->with('success', 'Task added successfully.');
+        // Fail-safe browser redirect bypasses cloud proxy host bugs
+        return response("<script>alert('Task created successfully!'); window.location.href='/';</script>");
     }
 
-    public function edit(Task $task): View
+    // Open Edit Page
+    public function edit($id)
     {
+        $task = Task::findOrFail($id);
         return view('tasks.edit', compact('task'));
     }
 
-    public function update(Request $request, Task $task): RedirectResponse
+    // Save Edit Changes Handler
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'task_name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'status' => ['required', 'in:Pending,Completed'],
-            'due_date' => ['nullable', 'date'],
+            'task_name' => 'required|max:255',
+            'description' => 'nullable',
+            'due_date' => 'nullable|date',
         ]);
 
+        $task = Task::findOrFail($id);
         $task->update($validated);
 
-        return to_route('tasks.index')->with('success', 'Task updated successfully.');
+        return response("<script>alert('Task updated successfully!'); window.location.href='/';</script>");
     }
 
-    public function destroy(Task $task): RedirectResponse
+    // Toggle Task Status (Pending / Completed)
+    public function updateStatus($id)
     {
+        $task = Task::findOrFail($id);
+        $task->status = $task->status === 'Pending' ? 'Completed' : 'Pending';
+        $task->save();
+
+        return response("<script>window.location.href='/';</script>");
+    }
+
+    // Secure Delete Action Handler
+    public function destroy($id)
+    {
+        $task = Task::findOrFail($id);
         $task->delete();
 
-        return to_route('tasks.index')->with('success', 'Task deleted successfully.');
-    }
-
-    public function updateStatus(Request $request, Task $task): RedirectResponse
-    {
-        $validated = $request->validate([
-            'status' => ['required', 'in:Pending,Completed'],
-        ]);
-
-        $task->update($validated);
-
-        return to_route('tasks.index')->with('success', 'Task status updated.');
+        return response("<script>alert('Task deleted successfully!'); window.location.href='/';</script>");
     }
 }
