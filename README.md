@@ -20,13 +20,14 @@ Database Used: SQLite (Laravel Native)
 ### System Screenshots
 
 #### 1. Main Dashboard (Empty State)
-![Empty Dashboard Layout](public/picture 1.png)
+#### 1. Main Dashboard (Empty State)
+![Empty Dashboard Layout](public/picture%201.png)
 
 #### 2. Create New Task Form Interface
-![Create Task](public/picture 2.png)
+![Create Task](public/picture%202.png)
 
 #### 3. Main Dashboard (After Task Is Added Successfully)
-![Dashboard](public/picture 3.png)
+![Dashboard](public/picture%203.png)
 
 
 
